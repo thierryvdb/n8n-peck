@@ -1,2 +1,0 @@
-{"__type":"$$EventMessage","id":"94c4154a-ff82-49ed-a319-a10db9abdbf3","ts":"2025-12-22T13:28:57.126+00:00","eventName":"n8n.worker.started","message":"n8n.worker.started","payload":{"workerId":"worker-ce636b74e3bb"}}
-{"__type":"$$EventMessageConfirm","confirm":"94c4154a-ff82-49ed-a319-a10db9abdbf3","ts":"2025-12-22T13:28:57.127+00:00","source":{"id":"0","name":"eventBus"}}
