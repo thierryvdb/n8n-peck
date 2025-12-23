@@ -1,0 +1,103 @@
+services:
+  postgres:
+    image: postgres:14
+    restart: always
+    environment:
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=n8n
+      - POSTGRES_DB=n8n
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - n8n-ftr
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - n8n-ftr
+    ports:
+      - 6379:6379
+    depends_on:
+      - postgres
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: always
+    ports:
+      - 5678:5678
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8n
+      - GENERIC_TIME_ZONE=America/Bahia
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - N8N_GIT_NODE_DISABLE_BARE_REPOS=true
+      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - N8N_HOST=septennial-zona-overpowering.ngrok-free.dev
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://septennial-zona-overpowering.ngrok-free.dev
+    volumes:
+      - ./n8n-data:/home/node/.n8n
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - n8n-ftr
+
+  n8n-worker:
+    image: n8nio/n8n:latest
+    command: worker
+    restart: always
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8n
+      - GENERIC_TIME_ZONE=America/Bahia
+      - EXECUTIONS_MODE=queue
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379
+    volumes:
+      - ./n8n-data:/home/node/.n8n
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - n8n-ftr
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command: http --url=septennial-zona-overpowering.ngrok-free.dev http://n8n:5678
+    environment:
+      - NGROK_AUTHTOKEN=35l3JYNZ6MzaNPSXehZmuwG9EQ7_4GSbKtmki9vXahM9WnXEo
+      - NGROK_LOG=stdout
+    depends_on:
+      - n8n
+    networks:
+      - n8n-ftr
+    ports:
+      - 4040:4040 # ngrok web inspector
+
+networks:
+  n8n-ftr:
+    driver: bridge
