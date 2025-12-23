@@ -1,7 +1,23 @@
 # n8n stack com ngrok
 
 ## Preparar variáveis
-- Edite `.env` com seu `NGROK_AUTHTOKEN` (e ajuste host/domínio se mudar o túnel).
+- Copie o arquivo de exemplo: `cp .env-sample .env`
+- Edite `.env` com seu `NGROK_AUTHTOKEN` e URL do ngrok (obtenha em https://dashboard.ngrok.com)
+
+## Corrigir permissões (Ubuntu/Linux)
+**IMPORTANTE**: Execute antes de subir a stack pela primeira vez:
+
+```bash
+chmod +x setup-permissions.sh
+./setup-permissions.sh
+```
+
+Ou manualmente:
+```bash
+mkdir -p n8n-data postgres_data redis_data
+sudo chown -R 1000:1000 n8n-data
+chmod -R 755 n8n-data
+```
 
 ## Subir stack
 ```bash
