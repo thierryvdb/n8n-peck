@@ -1,8 +1,8 @@
 # Docker volumes/data
-n8n-data/
-postgres_data/
-postgres-data/
-redis_data/
+n8n-data/*
+postgres_data/*
+postgres-data/*
+redis_data/*
 
 # Environment & local overrides
 .env
