@@ -1,0 +1,12 @@
+# Docker volumes/data
+n8n-data/
+postgres_data/
+postgres-data/
+redis_data/
+
+# Environment & local overrides
+.env
+
+# OS noise
+.DS_Store
+Thumbs.db
